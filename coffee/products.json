@@ -1,0 +1,38 @@
+[
+    {
+        "id": "mocha_small",
+        "name": "Coffee Mocha",
+        "size": 0,
+        "price": 120,
+        "ingredients": {
+            "coffee": 1,
+            "milk": 50,
+            "cream": 0,
+            "chocolate": 2
+        }
+    },
+    {
+        "id": "mocha_medium",
+        "name": "Coffee Mocha",
+        "size": 1,
+        "price": 220,
+        "ingredients": {
+            "coffee": 2,
+            "milk": 120,
+            "cream": 1,
+            "chocolate": 4
+        }
+    },
+    {
+        "id": "mocha_large",
+        "name": "Coffee Mocha",
+        "size": 2,
+        "price": 320,
+        "ingredients": {
+            "coffee": 2,
+            "milk": 180,
+            "cream": 1,
+            "chocolate": 6
+        }
+    }
+]

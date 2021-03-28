@@ -4,11 +4,8 @@ Create a coffee shop CQRS microservice
 
 1. Create an api order coffee
     - api:
-        - POST /api/v1/user - authnticates an user, returns a user id token that must be sent when placing an order
-        - POST /api/v1/coffee - creates a new coffee type
-        - PUT /api/v1/coffee - updated the ingredients or name of a coffee
-        - DELETE /api/v1/coffe/{id} - removes a coffee from the shop menu
-        - POST /api/v1/coffee/order - places an order for a coffee
+        - POST /api/v1/user - authenticates an user, returns a user id token that must be sent when placing an order
+        - POST /api/v1/order - places an order for a coffee
     - database:
         - mariadb:
             - user

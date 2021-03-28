@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: serbanblebea/coffee-shop-cqrs:0.1
+        depends_on:
+            - db-write
+            - db-read
+        restart: always
+        container_name: app
+        command: ["./coffee-shop", "start"]
+        env_file:
+            - ./.env
+        ports:
+            - ${HTTP_PORT}:${HTTP_PORT}
+
+    db-write:
+        image: linuxserver/mariadb:latest
+        container_name: db-write
+        volumes:
+            - ./volume/mysql:/var/lib/mysql
+        restart: always
+        env_file:
+            - ./.env
+        ports:
+            - 3306:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+    db-read:
+        image: mongo
+        container_name: db-read
+        volumes:
+            - ./volume/mongo:/data/db
+        restart: always
+        env_file:
+            - ./.env
+        ports:
+            - 27027:27017
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+
+    queue:
+        image: roribio16/alpine-sqs
+        container_name: queue
+        volumes:
+            - ./volume/sqs-config:/opt/custom
+        restart: always
+        env_file:
+            - ./.env
+        ports:
+            - 9324:9324
+            - 9325:9325
+        # environment:
+        #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+        #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
