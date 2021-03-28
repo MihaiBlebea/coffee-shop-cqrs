@@ -25,3 +25,5 @@ Create a coffee shop CQRS microservice
 
 3. Add rabbit mq or sqs for event sourcing
     - https://hub.docker.com/r/roribio16/alpine-sqs/
+    - https://tutorialedge.net/golang/go-rabbitmq-tutorial/
+    - https://www.youtube.com/watch?v=J_CGqiQx04c

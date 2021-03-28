@@ -47,17 +47,16 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
             - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
-    queue:
-        image: roribio16/alpine-sqs
-        container_name: queue
-        volumes:
-            - ./volume/sqs-config:/opt/custom
+    broker:
+        image: rabbitmq:3-management
+        container_name: broker
+        # volumes:
+        #     - ./volume/sqs-config:/opt/custom
         restart: always
         env_file:
             - ./.env
         ports:
-            - 9324:9324
-            - 9325:9325
-        # environment:
-        #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-        #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+            - 15673:15672
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} 
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
