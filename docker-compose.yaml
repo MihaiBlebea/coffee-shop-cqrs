@@ -57,6 +57,7 @@ services:
             - ./.env
         ports:
             - 15673:15672
+            - 5673:5672
         environment:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} 
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}

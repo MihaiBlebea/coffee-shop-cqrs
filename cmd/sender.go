@@ -10,11 +10,11 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(testCmd)
+	rootCmd.AddCommand(senderCmd)
 }
 
-var testCmd = &cobra.Command{
-	Use:   "test",
+var senderCmd = &cobra.Command{
+	Use:   "sender",
 	Short: "Test task.",
 	Long:  "Test task.",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -26,6 +26,22 @@ var testCmd = &cobra.Command{
 		l.SetLevel(logrus.InfoLevel)
 
 		b, err := broker.New()
+		if err != nil {
+			return err
+		}
+
+		err = b.CreateChannel()
+		if err != nil {
+			return err
+		}
+
+		foo := struct {
+			Message string `json:"message"`
+		}{
+			Message: "Hello lume",
+		}
+
+		err = b.PublishMessage(foo)
 		if err != nil {
 			return err
 		}
