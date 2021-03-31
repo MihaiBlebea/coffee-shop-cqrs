@@ -3,12 +3,11 @@ package cmd
 import (
 	"os"
 
-	"github.com/MihaiBlebea/coffee-shop-cqrs/coffee"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/conn"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/server"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/server/handler"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/trans"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/user"
+	"github.com/MihaiBlebea/coffee-shop-query/conn"
+	"github.com/MihaiBlebea/coffee-shop-query/evstore"
+	orderv "github.com/MihaiBlebea/coffee-shop-query/order_view"
+	"github.com/MihaiBlebea/coffee-shop-query/server"
+	"github.com/MihaiBlebea/coffee-shop-query/server/handler"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -29,24 +28,20 @@ var startCmd = &cobra.Command{
 		l.SetOutput(os.Stdout)
 		l.SetLevel(logrus.InfoLevel)
 
-		db, err := conn.ConnectSQL()
+		c, err := conn.ConnectMongo()
+		if err != nil {
+			return err
+		}
+		orderViewStore := orderv.New(c)
+
+		ev, err := evstore.New(orderViewStore)
 		if err != nil {
 			return err
 		}
 
-		cs, err := coffee.New()
-		if err != nil {
-			return err
-		}
+		ev.Listen()
 
-		ts := trans.New(db)
-		if err != nil {
-			return err
-		}
-
-		us := user.New(db, cs, ts)
-
-		h := handler.New(us, l)
+		h := handler.New(l)
 		s := server.New(h, l)
 
 		s.Run()

@@ -1,21 +1,37 @@
 version: "3.8"
 
 services:
-    app:
-        build:
-            context: ./
-            dockerfile: Dockerfile
-        image: serbanblebea/coffee-shop-cqrs:0.1
-        depends_on:
-            - db-write
-            - db-read
-        restart: always
-        container_name: app
-        command: ["./coffee-shop", "start"]
-        env_file:
-            - ./.env
-        ports:
-            - ${HTTP_PORT}:${HTTP_PORT}
+    # app-command:
+    #     build:
+    #         context: ./
+    #         dockerfile: Dockerfile
+    #     image: serbanblebea/coffee-shop-cqrs-command:0.1
+    #     depends_on:
+    #         - db-write
+    #         - db-read
+    #     restart: always
+    #     container_name: app-command
+    #     command: ["./coffee-shop", "start"]
+    #     env_file:
+    #         - ./.env
+    #     ports:
+    #         - 8087:${HTTP_PORT}
+    
+    # app-query:
+    #     build:
+    #         context: ./
+    #         dockerfile: Dockerfile
+    #     image: serbanblebea/coffee-shop-cqrs-query:0.1
+    #     depends_on:
+    #         - db-write
+    #         - db-read
+    #     restart: always
+    #     container_name: app-query
+    #     command: ["./coffee-shop", "start"]
+    #     env_file:
+    #         - ./.env
+    #     ports:
+    #         - 8088:${HTTP_PORT}
 
     db-write:
         image: linuxserver/mariadb:latest
@@ -24,7 +40,7 @@ services:
             - ./volume/mysql:/var/lib/mysql
         restart: always
         env_file:
-            - ./.env
+            - ./command/.env
         ports:
             - 3306:3306
         environment:
@@ -38,26 +54,69 @@ services:
         container_name: db-read
         volumes:
             - ./volume/mongo:/data/db
+            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
         restart: always
         env_file:
-            - ./.env
+            - ./command/.env
         ports:
             - 27027:27017
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        # environment:
+        #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+        #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_PASSWORD}
 
-    broker:
-        image: rabbitmq:3-management
-        container_name: broker
-        # volumes:
-        #     - ./volume/sqs-config:/opt/custom
+    # broker:
+    #     image: rabbitmq:3-management
+    #     container_name: broker
+    #     # volumes:
+    #     #     - ./volume/sqs-config:/opt/custom
+    #     restart: always
+    #     env_file:
+    #         - ./.env
+    #     ports:
+    #         - 15673:15672
+    #         - 5673:5672
+    #     environment:
+    #         - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} 
+    #         - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+
+    # eventstore:
+    #     image: eventstore/eventstore
+    #     container_name: eventstore
+    #     volumes:
+    #         - ./volume/eventstore/lib:/var/lib/eventstore
+    #         - ./volume/eventstore/log:/var/log/eventstore
+    #     restart: always
+    #     env_file:
+    #         - ./.env
+    #     ports:
+    #         - 1112:1112
+    #         - 1113:1113
+    #         - 2112:2112
+    #         - 2113:2113
+        # environment:
+        #     - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} 
+        #     - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+
+    eventstore:
+        image: eventstore/eventstore
+        ports:
+            - 1112:1112
+            - 1113:1113
+            - 2112:2112
+            - 2113:2113
+        container_name: eventstore
+        volumes:
+            - ./volume/eventstore/lib:/var/lib/eventstore
+            - ./volume/eventstore/log:/var/log/eventstore
         restart: always
         env_file:
-            - ./.env
-        ports:
-            - 15673:15672
-            - 5673:5672
+            - ./command/.env
         environment:
-            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} 
-            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+            - EVENTSTORE_CLUSTER_SIZE=1
+            - EVENTSTORE_RUN_PROJECTIONS=All
+            - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+            - EVENTSTORE_EXT_TCP_PORT=1113
+            - EVENTSTORE_EXT_HTTP_PORT=2113
+            - EVENTSTORE_INSECURE=true
+            - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+            - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true

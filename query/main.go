@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/MihaiBlebea/coffee-shop-cqrs/cmd"
+	"github.com/MihaiBlebea/coffee-shop-query/cmd"
 	"github.com/joho/godotenv"
 )
 

@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
-	"github.com/MihaiBlebea/coffee-shop-cqrs/conn"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/trans"
-	"github.com/MihaiBlebea/coffee-shop-cqrs/user"
+	"github.com/MihaiBlebea/coffee-shop-command/conn"
+	"github.com/MihaiBlebea/coffee-shop-command/trans"
+	"github.com/MihaiBlebea/coffee-shop-command/user"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,7 @@ var migrateCmd = &cobra.Command{
 			return err
 		}
 
-		us := user.New(db, nil, nil)
+		us := user.New(db, nil, nil, nil)
 
 		ts := trans.New(db)
 

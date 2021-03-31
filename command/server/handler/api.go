@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/MihaiBlebea/coffee-shop-cqrs/user"
+	"github.com/MihaiBlebea/coffee-shop-command/user"
 )
 
 type Logger interface {
